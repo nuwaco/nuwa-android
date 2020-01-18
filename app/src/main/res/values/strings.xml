@@ -547,5 +547,6 @@
 
     <string name="no_saved_status">You don\'t have any drafts.</string>
     <string name="no_scheduled_status">You don\'t have any scheduled statuses.</string>
+    <string name="pref_title_confirm_reblogs">Show confirmation dialog before boosting</string>
 
 </resources>

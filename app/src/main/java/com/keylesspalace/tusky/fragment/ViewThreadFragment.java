@@ -131,7 +131,8 @@ public final class ViewThreadFragment extends SFragment implements
                 accountManager.getActiveAccount().getMediaPreviewEnabled(),
                 preferences.getBoolean("absoluteTimeView", false),
                 preferences.getBoolean("showBotOverlay", true),
-                preferences.getBoolean("useBlurhash", true)
+                preferences.getBoolean("useBlurhash", true),
+                preferences.getBoolean("confirmReblogs", true)
         );
         adapter = new ThreadAdapter(statusDisplayOptions, this);
     }

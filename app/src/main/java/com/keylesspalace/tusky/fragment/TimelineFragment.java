@@ -226,7 +226,8 @@ public class TimelineFragment extends SFragment implements
                 accountManager.getActiveAccount().getMediaPreviewEnabled(),
                 preferences.getBoolean("absoluteTimeView", false),
                 preferences.getBoolean("showBotOverlay", true),
-                preferences.getBoolean("useBlurhash", true)
+                preferences.getBoolean("useBlurhash", true),
+                preferences.getBoolean("confirmReblogs", true)
         );
         adapter = new TimelineAdapter(dataSource, statusDisplayOptions, this);
 
@@ -576,6 +577,16 @@ public class TimelineFragment extends SFragment implements
     @Override
     public void onReblog(final boolean reblog, final int position) {
         final Status status = statuses.get(position).asRight();
+        boolean confirmReblogs = PreferenceManager.getDefaultSharedPreferences(getContext())
+                .getBoolean("confirmReblogs", false);
+        if (confirmReblogs) {
+
+        } else {
+            doReblog(reblog, position, status);
+        }
+    }
+
+    private void doReblog(boolean reblog, int position, Status status) {
         timelineCases.reblog(status, reblog)
                 .observeOn(AndroidSchedulers.mainThread())
                 .as(autoDisposable(from(this, Lifecycle.Event.ON_DESTROY)))

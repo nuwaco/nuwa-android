@@ -129,7 +129,7 @@ class PreferencesActivity : BaseActivity(), SharedPreferences.OnSharedPreference
 
             }
             "statusTextSize", "absoluteTimeView", "showBotOverlay", "animateGifAvatars",
-            "useBlurhash" -> {
+            "useBlurhash", "confirmReblogs" -> {
                 restartActivitiesOnExit = true
             }
             "language" -> {

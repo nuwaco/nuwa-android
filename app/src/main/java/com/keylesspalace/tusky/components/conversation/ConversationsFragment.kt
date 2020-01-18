@@ -70,7 +70,8 @@ class ConversationsFragment : SFragment(), StatusActionListener, Injectable, Res
                 mediaPreviewEnabled = accountManager.activeAccount?.mediaPreviewEnabled ?: true,
                 useAbsoluteTime = preferences.getBoolean("absoluteTimeView", false),
                 showBotOverlay = preferences.getBoolean("showBotOverlay", true),
-                useBlurhash = preferences.getBoolean("useBlurhash", true)
+                useBlurhash = preferences.getBoolean("useBlurhash", true),
+                confirmReblogs = preferences.getBoolean("confirmReblogs", true)
         )
 
 

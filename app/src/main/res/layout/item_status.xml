@@ -431,7 +431,7 @@
         app:layout_constraintTop_toBottomOf="@id/status_poll_description"
         app:srcCompat="@drawable/ic_reply_24dp" />
 
-    <at.connyduck.sparkbutton.SparkButton
+    <com.keylesspalace.tusky.view.ConditionalSparkButton
         android:id="@+id/status_inset"
         android:layout_width="30dp"
         android:layout_height="30dp"

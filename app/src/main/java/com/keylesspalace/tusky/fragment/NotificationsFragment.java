@@ -243,7 +243,8 @@ public class NotificationsFragment extends SFragment implements
                 accountManager.getActiveAccount().getMediaPreviewEnabled(),
                 preferences.getBoolean("absoluteTimeView", false),
                 preferences.getBoolean("showBotOverlay", true),
-                preferences.getBoolean("useBlurhash", true)
+                preferences.getBoolean("useBlurhash", true),
+                preferences.getBoolean("confirmReblogs", true)
         );
 
         adapter = new NotificationsAdapter(accountManager.getActiveAccount().getAccountId(),

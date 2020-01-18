@@ -17,6 +17,7 @@ import android.widget.Toast;
 import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -37,6 +38,7 @@ import com.keylesspalace.tusky.util.LinkHelper;
 import com.keylesspalace.tusky.util.StatusDisplayOptions;
 import com.keylesspalace.tusky.util.ThemeUtils;
 import com.keylesspalace.tusky.util.TimestampUtils;
+import com.keylesspalace.tusky.view.ConditionalSparkButton;
 import com.keylesspalace.tusky.view.MediaPreviewImageView;
 import com.keylesspalace.tusky.viewdata.PollOptionViewData;
 import com.keylesspalace.tusky.viewdata.PollViewData;
@@ -64,7 +66,7 @@ public abstract class StatusBaseViewHolder extends RecyclerView.ViewHolder {
     private TextView displayName;
     private TextView username;
     private ImageButton replyButton;
-    private SparkButton reblogButton;
+    private ConditionalSparkButton reblogButton;
     private SparkButton favouriteButton;
     private SparkButton bookmarkButton;
     private ImageButton moreButton;
@@ -194,7 +196,7 @@ public abstract class StatusBaseViewHolder extends RecyclerView.ViewHolder {
             contentWarningDescription.setVisibility(View.VISIBLE);
             contentWarningButton.setVisibility(View.VISIBLE);
             setContentWarningButtonText(expanded);
-            contentWarningButton.setOnClickListener( view -> {
+            contentWarningButton.setOnClickListener(view -> {
                 contentWarningDescription.invalidate();
                 if (getAdapterPosition() != RecyclerView.NO_POSITION) {
                     listener.onExpandedChange(!expanded, getAdapterPosition());
@@ -208,7 +210,7 @@ public abstract class StatusBaseViewHolder extends RecyclerView.ViewHolder {
     }
 
     private void setContentWarningButtonText(boolean expanded) {
-        if(expanded) {
+        if (expanded) {
             contentWarningButton.setText(R.string.status_content_warning_show_less);
         } else {
             contentWarningButton.setText(R.string.status_content_warning_show_more);
@@ -591,7 +593,9 @@ public abstract class StatusBaseViewHolder extends RecyclerView.ViewHolder {
         sensitiveMediaShow.setVisibility(View.GONE);
     }
 
-    protected void setupButtons(final StatusActionListener listener, final String accountId) {
+    protected void setupButtons(final StatusActionListener listener, final String accountId,
+                                final String statusContent,
+                                StatusDisplayOptions statusDisplayOptions) {
 
         avatar.setOnClickListener(v -> listener.onViewAccount(accountId));
         replyButton.setOnClickListener(v -> {
@@ -601,12 +605,25 @@ public abstract class StatusBaseViewHolder extends RecyclerView.ViewHolder {
             }
         });
         if (reblogButton != null) {
-            reblogButton.setEventListener((button, buttonState) -> {
-                int position = getAdapterPosition();
-                if (position != RecyclerView.NO_POSITION) {
-                    listener.onReblog(buttonState, position);
-                }
-            });
+            if (statusDisplayOptions.confirmReblogs()) {
+                reblogButton.onClickListener = (buttonStatus) -> {
+                    int okButtonTextId =
+                            buttonStatus ? R.string.action_reblog : R.string.action_unreblog;
+                    new AlertDialog.Builder(reblogButton.getContext())
+                            .setMessage(statusContent)
+                            .setPositiveButton(okButtonTextId, (__, ___) ->
+                                    reblogButton.doCLick())
+                            .show();
+                    return true;
+                };
+            } else {
+                reblogButton.setEventListener((button, buttonState) -> {
+                    int position = getAdapterPosition();
+                    if (position != RecyclerView.NO_POSITION) {
+                        listener.onReblog(buttonState, position);
+                    }
+                });
+            }
         }
 
         favouriteButton.setEventListener((button, buttonState) -> {
@@ -683,7 +700,8 @@ public abstract class StatusBaseViewHolder extends RecyclerView.ViewHolder {
                 hideSensitiveMediaWarning();
             }
 
-            setupButtons(listener, status.getSenderId());
+            setupButtons(listener, status.getSenderId(), status.getContent().toString(),
+                    statusDisplayOptions);
             setRebloggingEnabled(status.getRebloggingEnabled(), status.getVisibility());
 
             setSpoilerAndContent(status.isExpanded(), status.getContent(), status.getSpoilerText(), status.getMentions(), status.getStatusEmojis(), status.getPoll(), statusDisplayOptions, listener);
