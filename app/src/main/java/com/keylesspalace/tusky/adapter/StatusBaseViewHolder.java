@@ -610,18 +610,7 @@ public abstract class StatusBaseViewHolder extends RecyclerView.ViewHolder {
                     listener.onReblog(!buttonState, position);
                 }
                 if (statusDisplayOptions.confirmReblogs()) {
-                    int okButtonTextId =
-                            buttonState ? R.string.action_unreblog : R.string.action_reblog;
-                    new AlertDialog.Builder(reblogButton.getContext())
-                            .setMessage(statusContent)
-                            .setPositiveButton(okButtonTextId, (__, ___) -> {
-                                listener.onReblog(!buttonState, position);
-                                if (!buttonState) {
-                                    // Play animation only when it's reblog, not unreblog
-                                    reblogButton.playAnimation();
-                                }
-                            })
-                            .show();
+                    showConfirmReblogDialog(listener, statusContent, buttonState, position);
                     return false;
                 } else {
                     return true;
@@ -663,6 +652,23 @@ public abstract class StatusBaseViewHolder extends RecyclerView.ViewHolder {
         };
         content.setOnClickListener(viewThreadListener);
         itemView.setOnClickListener(viewThreadListener);
+    }
+
+    private void showConfirmReblogDialog(StatusActionListener listener,
+                                         String statusContent,
+                                         boolean buttonState,
+                                         int position) {
+        int okButtonTextId = buttonState ? R.string.action_unreblog : R.string.action_reblog;
+        new AlertDialog.Builder(reblogButton.getContext())
+                .setMessage(statusContent)
+                .setPositiveButton(okButtonTextId, (__, ___) -> {
+                    listener.onReblog(!buttonState, position);
+                    if (!buttonState) {
+                        // Play animation only when it's reblog, not unreblog
+                        reblogButton.playAnimation();
+                    }
+                })
+                .show();
     }
 
     public void setupWithStatus(StatusViewData.Concrete status, final StatusActionListener listener,
