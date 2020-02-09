@@ -577,13 +577,7 @@ public class TimelineFragment extends SFragment implements
     @Override
     public void onReblog(final boolean reblog, final int position) {
         final Status status = statuses.get(position).asRight();
-        boolean confirmReblogs = PreferenceManager.getDefaultSharedPreferences(getContext())
-                .getBoolean("confirmReblogs", false);
-        if (confirmReblogs) {
-
-        } else {
-            doReblog(reblog, position, status);
-        }
+        doReblog(reblog, position, status);
     }
 
     private void doReblog(boolean reblog, int position, Status status) {

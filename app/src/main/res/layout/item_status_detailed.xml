@@ -519,7 +519,7 @@
         app:layout_constraintTop_toBottomOf="@id/status_buttons_divider"
         app:srcCompat="@drawable/ic_reply_24dp" />
 
-    <com.keylesspalace.tusky.view.ConditionalSparkButton
+    <at.connyduck.sparkbutton.SparkButton
         android:id="@+id/status_inset"
         android:layout_width="40dp"
         android:layout_height="40dp"

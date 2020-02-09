@@ -38,7 +38,6 @@ import com.keylesspalace.tusky.util.LinkHelper;
 import com.keylesspalace.tusky.util.StatusDisplayOptions;
 import com.keylesspalace.tusky.util.ThemeUtils;
 import com.keylesspalace.tusky.util.TimestampUtils;
-import com.keylesspalace.tusky.view.ConditionalSparkButton;
 import com.keylesspalace.tusky.view.MediaPreviewImageView;
 import com.keylesspalace.tusky.viewdata.PollOptionViewData;
 import com.keylesspalace.tusky.viewdata.PollViewData;
@@ -66,7 +65,7 @@ public abstract class StatusBaseViewHolder extends RecyclerView.ViewHolder {
     private TextView displayName;
     private TextView username;
     private ImageButton replyButton;
-    private ConditionalSparkButton reblogButton;
+    private SparkButton reblogButton;
     private SparkButton favouriteButton;
     private SparkButton bookmarkButton;
     private ImageButton moreButton;
@@ -605,39 +604,40 @@ public abstract class StatusBaseViewHolder extends RecyclerView.ViewHolder {
             }
         });
         if (reblogButton != null) {
-            if (statusDisplayOptions.confirmReblogs()) {
-                reblogButton.onClickListener = (buttonStatus) -> {
+            reblogButton.setEventListener((button, buttonState) -> {
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    listener.onReblog(!buttonState, position);
+                }
+                if (statusDisplayOptions.confirmReblogs()) {
                     int okButtonTextId =
-                            buttonStatus ? R.string.action_reblog : R.string.action_unreblog;
+                            buttonState ? R.string.action_unreblog : R.string.action_reblog;
                     new AlertDialog.Builder(reblogButton.getContext())
                             .setMessage(statusContent)
                             .setPositiveButton(okButtonTextId, (__, ___) ->
-                                    reblogButton.doCLick())
+                                    listener.onReblog(!buttonState, position))
                             .show();
+                    return false;
+                } else {
                     return true;
-                };
-            } else {
-                reblogButton.setEventListener((button, buttonState) -> {
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        listener.onReblog(buttonState, position);
-                    }
-                });
-            }
+                }
+            });
         }
 
         favouriteButton.setEventListener((button, buttonState) -> {
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
-                listener.onFavourite(buttonState, position);
+                listener.onFavourite(!buttonState, position);
             }
+            return true;
         });
 
         bookmarkButton.setEventListener((button, buttonState) -> {
             int position = getAdapterPosition();
             if (position != RecyclerView.NO_POSITION) {
-                listener.onBookmark(buttonState, position);
+                listener.onBookmark(!buttonState, position);
             }
+            return true;
         });
 
         moreButton.setOnClickListener(v -> {
