@@ -614,8 +614,13 @@ public abstract class StatusBaseViewHolder extends RecyclerView.ViewHolder {
                             buttonState ? R.string.action_unreblog : R.string.action_reblog;
                     new AlertDialog.Builder(reblogButton.getContext())
                             .setMessage(statusContent)
-                            .setPositiveButton(okButtonTextId, (__, ___) ->
-                                    listener.onReblog(!buttonState, position))
+                            .setPositiveButton(okButtonTextId, (__, ___) -> {
+                                listener.onReblog(!buttonState, position);
+                                if (!buttonState) {
+                                    // Play animation only when it's reblog, not unreblog
+                                    reblogButton.playAnimation();
+                                }
+                            })
                             .show();
                     return false;
                 } else {
